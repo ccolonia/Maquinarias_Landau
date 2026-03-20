@@ -1,9 +1,14 @@
-import AdminLayout from '@/components/admin/AdminLayout'
+import AuthGuard from '@/components/admin/AuthGuard'
+import AdminLayoutClient from './AdminLayoutClient'
 
 export default function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <AdminLayout>{children}</AdminLayout>
+  return (
+    <AuthGuard>
+      <AdminLayoutClient>{children}</AdminLayoutClient>
+    </AuthGuard>
+  )
 }

@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { 
   Plus, 
-  Search, 
   Edit, 
   Trash2, 
   Eye, 
@@ -33,6 +32,8 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useToast } from '@/hooks/use-toast'
+import { useRouter } from 'next/navigation'
 
 interface Product {
   id: string
@@ -72,6 +73,8 @@ export default function ProductosPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [saving, setSaving] = useState(false)
+  const { toast } = useToast()
+  const router = useRouter()
 
   // Form state
   const [formData, setFormData] = useState({
@@ -86,16 +89,12 @@ export default function ProductosPage() {
     active: true
   })
 
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
     try {
       const [productsRes, brandsRes, categoriesRes] = await Promise.all([
-        fetch('/api/admin/products'),
-        fetch('/api/admin/brands'),
-        fetch('/api/admin/categories')
+        fetch('/api/admin/products', { cache: 'no-store' }),
+        fetch('/api/admin/brands', { cache: 'no-store' }),
+        fetch('/api/admin/categories', { cache: 'no-store' })
       ])
 
       const productsData = await productsRes.json()
@@ -107,10 +106,19 @@ export default function ProductosPage() {
       setCategories(categoriesData)
     } catch (error) {
       console.error('Error fetching data:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudieron cargar los datos',
+        variant: 'destructive'
+      })
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -153,7 +161,11 @@ export default function ProductosPage() {
 
   async function handleSave() {
     if (!formData.name || !formData.brandId || !formData.categoryId) {
-      alert('Por favor complete los campos requeridos')
+      toast({
+        title: 'Error',
+        description: 'Por favor complete los campos requeridos',
+        variant: 'destructive'
+      })
       return
     }
 
@@ -166,23 +178,38 @@ export default function ProductosPage() {
       }
 
       if (editingProduct) {
-        await fetch(`/api/admin/products/${editingProduct.id}`, {
+        const res = await fetch(`/api/admin/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         })
+        
+        if (!res.ok) throw new Error('Error al actualizar')
       } else {
-        await fetch('/api/admin/products', {
+        const res = await fetch('/api/admin/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         })
+        
+        if (!res.ok) throw new Error('Error al crear')
       }
 
+      toast({
+        title: 'Éxito',
+        description: editingProduct ? 'Producto actualizado correctamente' : 'Producto creado correctamente'
+      })
+
       setIsDialogOpen(false)
-      fetchData()
+      await fetchData()
+      router.refresh()
     } catch (error) {
       console.error('Error saving product:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo guardar el producto',
+        variant: 'destructive'
+      })
     } finally {
       setSaving(false)
     }
@@ -192,23 +219,43 @@ export default function ProductosPage() {
     if (!confirm('¿Está seguro de eliminar este producto?')) return
 
     try {
-      await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
-      fetchData()
+      const res = await fetch(`/api/admin/products/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Error al eliminar')
+      
+      toast({
+        title: 'Éxito',
+        description: 'Producto eliminado correctamente'
+      })
+      await fetchData()
+      router.refresh()
     } catch (error) {
       console.error('Error deleting product:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo eliminar el producto',
+        variant: 'destructive'
+      })
     }
   }
 
   async function toggleActive(product: Product) {
     try {
-      await fetch(`/api/admin/products/${product.id}`, {
+      const res = await fetch(`/api/admin/products/${product.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...product, active: !product.active })
       })
-      fetchData()
+      if (!res.ok) throw new Error('Error al actualizar')
+      
+      await fetchData()
+      router.refresh()
     } catch (error) {
       console.error('Error toggling product:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo actualizar el producto',
+        variant: 'destructive'
+      })
     }
   }
 
@@ -239,7 +286,9 @@ export default function ProductosPage() {
         <CardContent className="p-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <Input
                 placeholder="Buscar productos..."
                 value={searchTerm}
@@ -271,6 +320,9 @@ export default function ProductosPage() {
                 src={product.image || '/images/placeholder.png'}
                 alt={product.name}
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/placeholder.png'
+                }}
               />
               {product.brand && (
                 <Badge 

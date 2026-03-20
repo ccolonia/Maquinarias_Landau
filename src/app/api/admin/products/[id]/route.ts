@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+interface RouteParams {
+  params: Promise<{ id: string }>
+}
+
 // GET - Obtener producto por ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteParams
 ) {
   try {
     const { id } = await params
@@ -28,20 +32,21 @@ export async function GET(
 // PUT - Actualizar producto
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteParams
 ) {
   try {
     const { id } = await params
     const data = await request.json()
+    
     const product = await db.product.update({
       where: { id },
       data: {
         name: data.name,
-        slug: data.slug,
+        slug: data.slug || data.name.toLowerCase().replace(/\s+/g, '-'),
         description: data.description,
         power: data.power,
         image: data.image,
-        features: JSON.stringify(data.features || []),
+        features: typeof data.features === 'string' ? data.features : JSON.stringify(data.features || []),
         brandId: data.brandId,
         categoryId: data.categoryId,
         featured: data.featured,
@@ -63,7 +68,7 @@ export async function PUT(
 // DELETE - Eliminar producto
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: RouteParams
 ) {
   try {
     const { id } = await params
