@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 // Datos de respaldo cuando no hay base de datos
 const fallbackServices = [
@@ -40,6 +41,10 @@ export async function POST(request: NextRequest) {
         active: data.active ?? true
       }
     })
+    
+    // Revalidar página principal
+    revalidatePath('/', 'page')
+    
     return NextResponse.json(service)
   } catch (error) {
     return NextResponse.json({ error: 'Base de datos no configurada. Configure PostgreSQL en Vercel.' }, { status: 503 })

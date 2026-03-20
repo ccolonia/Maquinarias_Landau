@@ -10,7 +10,12 @@ import {
   MapPin,
   Clock,
   Facebook,
-  Instagram
+  Instagram,
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  Key
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -42,14 +47,29 @@ interface SiteConfig {
   primaryColor: string
 }
 
+interface CurrentUser {
+  email: string
+  name: string
+}
+
 export default function ConfiguracionPage() {
   const [config, setConfig] = useState<SiteConfig | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const { toast } = useToast()
+  
+  // Credenciales
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
+  const [newEmail, setNewEmail] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPasswords, setShowPasswords] = useState(false)
+  const [savingCredentials, setSavingCredentials] = useState(false)
 
   useEffect(() => {
     fetchConfig()
+    fetchCurrentUser()
   }, [])
 
   async function fetchConfig() {
@@ -61,6 +81,19 @@ export default function ConfiguracionPage() {
       console.error('Error fetching config:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchCurrentUser() {
+    try {
+      const res = await fetch('/api/admin/auth')
+      const data = await res.json()
+      if (data.authenticated && data.user) {
+        setCurrentUser({ email: data.user.email, name: data.user.name })
+        setNewEmail(data.user.email)
+      }
+    } catch (error) {
+      console.error('Error fetching user:', error)
     }
   }
 
@@ -91,6 +124,79 @@ export default function ConfiguracionPage() {
     }
   }
 
+  async function handleSaveCredentials() {
+    if (!currentPassword && (newEmail !== currentUser?.email || newPassword)) {
+      toast({
+        title: 'Contraseña requerida',
+        description: 'Debes ingresar tu contraseña actual para hacer cambios.',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    if (newPassword && newPassword !== confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Las contraseñas nuevas no coinciden.',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    if (newPassword && newPassword.length < 6) {
+      toast({
+        title: 'Error',
+        description: 'La contraseña debe tener al menos 6 caracteres.',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    setSavingCredentials(true)
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword,
+          newEmail: newEmail !== currentUser?.email ? newEmail : undefined,
+          newPassword: newPassword || undefined
+        })
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al actualizar')
+      }
+
+      // Actualizar estado local
+      if (data.user) {
+        setCurrentUser({ email: data.user.email, name: data.user.name })
+        setNewEmail(data.user.email)
+      }
+      
+      // Limpiar campos de contraseña
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+
+      toast({
+        title: 'Credenciales actualizadas',
+        description: data.message || 'Los cambios se guardaron correctamente.'
+      })
+    } catch (error) {
+      console.error('Error saving credentials:', error)
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'No se pudieron actualizar las credenciales.',
+        variant: 'destructive'
+      })
+    } finally {
+      setSavingCredentials(false)
+    }
+  }
+
   function updateConfig(field: keyof SiteConfig, value: string | number) {
     if (!config) return
     setConfig({ ...config, [field]: value })
@@ -118,6 +224,93 @@ export default function ConfiguracionPage() {
           Guardar Cambios
         </Button>
       </div>
+
+      {/* Credenciales de Acceso */}
+      <Card className="border border-gray-100">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Key className="w-5 h-5" />
+            Credenciales de Acceso
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <p className="text-sm text-gray-500 mb-2">
+            Cambia tu email y/o contraseña de acceso al panel administrativo.
+          </p>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Email de acceso
+              </Label>
+              <Input
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="admin@landau.com"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Contraseña actual</Label>
+              <div className="relative">
+                <Input
+                  type={showPasswords ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Ingresa tu contraseña actual"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords(!showPasswords)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPasswords ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
+                Nueva contraseña
+              </Label>
+              <Input
+                type={showPasswords ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Dejar vacío para mantener actual"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label>Confirmar nueva contraseña</Label>
+              <Input
+                type={showPasswords ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Repetir nueva contraseña"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleSaveCredentials} 
+              disabled={savingCredentials}
+              className="bg-gray-800 hover:bg-gray-700"
+            >
+              {savingCredentials ? (
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <Lock className="w-4 h-4 mr-2" />
+              )}
+              Actualizar Credenciales
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Información General */}
       <Card className="border border-gray-100">

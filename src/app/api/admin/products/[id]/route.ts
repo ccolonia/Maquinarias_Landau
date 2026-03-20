@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 interface RouteParams {
   params: Promise<{ id: string }>
@@ -58,6 +59,11 @@ export async function PUT(
         category: true
       }
     })
+    
+    // Revalidar páginas que usan productos
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalogo', 'page')
+    
     return NextResponse.json(product)
   } catch (error) {
     console.error('Error updating product:', error)
@@ -75,6 +81,11 @@ export async function DELETE(
     await db.product.delete({
       where: { id }
     })
+    
+    // Revalidar páginas que usan productos
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalogo', 'page')
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting product:', error)

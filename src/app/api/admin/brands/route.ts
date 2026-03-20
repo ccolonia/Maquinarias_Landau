@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 // Datos de respaldo cuando no hay base de datos
 const fallbackBrands = [
@@ -45,6 +46,11 @@ export async function POST(request: NextRequest) {
         active: data.active ?? true
       }
     })
+    
+    // Revalidar páginas que usan marcas
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalogo', 'page')
+    
     return NextResponse.json(brand)
   } catch (error) {
     return NextResponse.json({ error: 'Base de datos no configurada. Configure PostgreSQL en Vercel.' }, { status: 503 })

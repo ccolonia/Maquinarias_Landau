@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 // GET - Obtener servicio por ID
 export async function GET(
@@ -41,6 +42,10 @@ export async function PUT(
         active: data.active
       }
     })
+    
+    // Revalidar página principal
+    revalidatePath('/', 'page')
+    
     return NextResponse.json(service)
   } catch (error) {
     console.error('Error updating service:', error)
@@ -58,6 +63,10 @@ export async function DELETE(
     await db.service.delete({
       where: { id }
     })
+    
+    // Revalidar página principal
+    revalidatePath('/', 'page')
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting service:', error)

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 // GET - Obtener testimonio por ID
 export async function GET(
@@ -41,6 +42,10 @@ export async function PUT(
         order: data.order
       }
     })
+    
+    // Revalidar página principal
+    revalidatePath('/', 'page')
+    
     return NextResponse.json(testimonial)
   } catch (error) {
     console.error('Error updating testimonial:', error)
@@ -58,6 +63,10 @@ export async function DELETE(
     await db.testimonial.delete({
       where: { id }
     })
+    
+    // Revalidar página principal
+    revalidatePath('/', 'page')
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting testimonial:', error)

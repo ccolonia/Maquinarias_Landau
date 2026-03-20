@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { revalidatePath } from 'next/cache'
 
 // GET - Obtener categoría por ID
 export async function GET(
@@ -42,6 +43,11 @@ export async function PUT(
         active: data.active
       }
     })
+    
+    // Revalidar páginas que usan categorías
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalogo', 'page')
+    
     return NextResponse.json(category)
   } catch (error) {
     console.error('Error updating category:', error)
@@ -59,6 +65,11 @@ export async function DELETE(
     await db.category.delete({
       where: { id }
     })
+    
+    // Revalidar páginas que usan categorías
+    revalidatePath('/', 'layout')
+    revalidatePath('/catalogo', 'page')
+    
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting category:', error)

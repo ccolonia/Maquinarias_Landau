@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 // Configuración por defecto cuando no hay base de datos
 const fallbackConfig = {
@@ -97,6 +98,9 @@ export async function PUT(request: Request) {
       })
     }
 
+    // Revalidar todas las páginas
+    revalidatePath('/', 'layout')
+    
     return NextResponse.json(config)
   } catch (error) {
     return NextResponse.json({ error: 'Base de datos no configurada. Configure PostgreSQL en Vercel.' }, { status: 503 })
