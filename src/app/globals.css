@@ -337,3 +337,21 @@ html {
   background: rgba(190, 30, 45, 0.4);
   color: #ffffff;
 }
+
+/* Imágenes más claras - Landing Page */
+img {
+  filter: brightness(1.05) contrast(1.02);
+}
+
+.flip-card-front img {
+  filter: brightness(1.15) contrast(1.05);
+}
+
+.aspect-square img {
+  filter: brightness(1.12) contrast(1.03);
+}
+
+/* Imágenes de servicios SIN overlay oscuro */
+.flip-card-front .absolute.inset-0 {
+  background: linear-gradient(to top, rgba(0,0,0,0.15) 0%, transparent 40%) !important;
+}
