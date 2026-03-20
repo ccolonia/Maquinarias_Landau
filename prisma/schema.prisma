@@ -1,0 +1,150 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Usuario administrador
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Marcas de productos
+model Brand {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  color       String     @default("#BE1E2D")
+  logo        String?
+  description String?
+  order       Int        @default(0)
+  active      Boolean    @default(true)
+  products    Product[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// Categorías de productos
+model Category {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  order       Int        @default(0)
+  active      Boolean    @default(true)
+  products    Product[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// Productos
+model Product {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String
+  power       String     // Potencia (18V, 900W, etc.)
+  image       String
+  features    String     // JSON string de características
+  brandId     String
+  categoryId  String
+  brand       Brand      @relation(fields: [brandId], references: [id])
+  category    Category   @relation(fields: [categoryId], references: [id])
+  featured    Boolean    @default(false)
+  active      Boolean    @default(true)
+  order       Int        @default(0)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// Servicios
+model Service {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  image       String
+  features    String   // JSON string de características
+  icon        String   // Nombre del icono de Lucide
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Testimonios
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  company   String
+  content   String
+  rating    Int      @default(5)
+  active    Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Configuración del sitio
+model SiteConfig {
+  id                String   @id @default(cuid())
+  siteName          String   @default("Maquinarias Landau")
+  siteDescription   String?
+  logo              String?
+  heroTitle         String?
+  heroSubtitle      String?
+  heroDescription   String?
+  heroImage         String?
+  address           String?
+  phone             String?
+  whatsapp          String?
+  email             String?
+  schedule          String?  // JSON string con horarios
+  facebook          String?
+  instagram         String?
+  yearsExperience   Int      @default(75)
+  clientsCount      Int      @default(50000)
+  brandsCount       Int      @default(200)
+  techniciansCount  Int      @default(15)
+  primaryColor      String   @default("#BE1E2D")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// Mensajes de contacto
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// Slides del hero/carrusel
+model HeroSlide {
+  id          String   @id @default(cuid())
+  title       String
+  subtitle    String?
+  description String?
+  image       String
+  buttonText  String?
+  buttonLink  String?
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
