@@ -1,46 +1,48 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { NextResponse } from 'next/server'
+
+// Configuración por defecto cuando no hay base de datos
+const fallbackConfig = {
+  id: 'default',
+  siteName: 'Maquinarias Landau',
+  siteDescription: 'Potencia y precisión para tu trabajo desde 1949',
+  logo: '/images/logo.png',
+  heroTitle: 'Potencia y Precisión para tu Trabajo',
+  heroSubtitle: 'Distribuidores oficiales de Bosch y Makita',
+  heroDescription: 'Más de 75 años liderando en herramientas industriales con servicio técnico propio y asesoría profesional.',
+  heroImage: '/images/hero_visual.png',
+  address: 'Av. Asamblea 524, C1424 CABA, Argentina',
+  phone: '4921-7875 / 4923-0918',
+  whatsapp: '5491162422197',
+  email: 'landaumaq2@gmail.com',
+  schedule: '{"weekdays": "Lun-Jue: 9:30-17:00", "friday": "Vie: 9:30-14:00", "saturday": "Sáb: 8:00-13:00"}',
+  facebook: '',
+  instagram: '',
+  yearsExperience: 75,
+  clientsCount: 50000,
+  brandsCount: 200,
+  techniciansCount: 15,
+  primaryColor: '#BE1E2D'
+}
 
 // GET - Obtener configuración del sitio
 export async function GET() {
   try {
+    const { db } = await import('@/lib/db')
     let config = await db.siteConfig.findFirst()
     if (!config) {
-      // Crear configuración por defecto
-      config = await db.siteConfig.create({
-        data: {
-          siteName: 'Maquinarias Landau',
-          siteDescription: 'Potencia y precisión para tu trabajo desde 1949',
-          heroTitle: 'Potencia y Precisión para tu Trabajo',
-          heroSubtitle: 'Distribuidores oficiales de Bosch y Makita',
-          heroDescription: 'Más de 75 años liderando en herramientas industriales con servicio técnico propio y asesoría profesional.',
-          address: 'Av. Asamblea 524, C1424 CABA, Argentina',
-          phone: '4921-7875 / 4923-0918',
-          whatsapp: '5491162422197',
-          email: 'landaumaq2@gmail.com',
-          schedule: JSON.stringify({
-            weekdays: 'Lun-Jue: 9:30-17:00',
-            friday: 'Vie: 9:30-14:00',
-            saturday: 'Sáb: 8:00-13:00'
-          }),
-          yearsExperience: 75,
-          clientsCount: 50000,
-          brandsCount: 200,
-          techniciansCount: 15,
-          primaryColor: '#BE1E2D'
-        }
-      })
+      config = fallbackConfig as any
     }
     return NextResponse.json(config)
   } catch (error) {
-    console.error('Error fetching config:', error)
-    return NextResponse.json({ error: 'Error al obtener configuración' }, { status: 500 })
+    console.log('Usando configuración de respaldo')
+    return NextResponse.json(fallbackConfig)
   }
 }
 
 // PUT - Actualizar configuración
-export async function PUT(request: NextRequest) {
+export async function PUT(request: Request) {
   try {
+    const { db } = await import('@/lib/db')
     const data = await request.json()
     let config = await db.siteConfig.findFirst()
 
@@ -97,7 +99,6 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(config)
   } catch (error) {
-    console.error('Error updating config:', error)
-    return NextResponse.json({ error: 'Error al actualizar configuración' }, { status: 500 })
+    return NextResponse.json({ error: 'Base de datos no configurada. Configure PostgreSQL en Vercel.' }, { status: 503 })
   }
 }

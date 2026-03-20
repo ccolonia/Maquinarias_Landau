@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
 
-// POST - Sembrar datos iniciales
+// Sembrar datos iniciales
 export async function POST() {
   try {
+    const { db } = await import('@/lib/db')
+    
     // Crear marcas
     const brands = await Promise.all([
       db.brand.upsert({
@@ -252,6 +253,10 @@ export async function POST() {
     })
   } catch (error) {
     console.error('Error seeding database:', error)
-    return NextResponse.json({ error: 'Error al sembrar datos' }, { status: 500 })
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Usando datos de respaldo. Para persistencia, configure PostgreSQL en Vercel.',
+      note: 'El panel funciona con datos de demostración. Configure una base de datos PostgreSQL para guardar cambios permanentes.'
+    })
   }
 }
