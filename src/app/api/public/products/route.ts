@@ -12,7 +12,8 @@ export async function GET(request: NextRequest) {
     const brandId = searchParams.get('brandId')
     const categoryId = searchParams.get('categoryId')
     
-    const where: Record<string, unknown> = { active: true }
+    // Construir filtro
+    const where: Record<string, unknown> = {}
     if (brandId) where.brandId = brandId
     if (categoryId) where.categoryId = categoryId
     
@@ -20,24 +21,16 @@ export async function GET(request: NextRequest) {
       where,
       orderBy: { order: 'asc' },
       include: {
-        brand: true,
-        category: true
+        brand: { select: { id: true, name: true, color: true, slug: true } },
+        category: { select: { id: true, name: true, slug: true } }
       }
     })
     
-    if (products && products.length > 0) {
-      return NextResponse.json(products, {
-        headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'CDN-Cache-Control': 'no-store',
-          'Vercel-CDN-Cache-Control': 'no-store'
-        }
-      })
-    }
-    
-    return NextResponse.json([], {
+    return NextResponse.json(products || [], {
       headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate'
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+        'CDN-Cache-Control': 'no-store',
+        'Vercel-CDN-Cache-Control': 'no-store, no-cache'
       }
     })
   } catch (error) {
