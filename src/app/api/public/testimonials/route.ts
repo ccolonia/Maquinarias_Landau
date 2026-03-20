@@ -1,21 +1,39 @@
 import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+
+// Forzar renderizado dinámico - SIN CACHE
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 // API pública para la landing page - obtiene testimonios
 export async function GET() {
   try {
-    const { db } = await import('@/lib/db')
     const testimonials = await db.testimonial.findMany({
       where: { active: true },
       orderBy: { order: 'asc' }
     })
-    return NextResponse.json(testimonials)
+    
+    if (testimonials && testimonials.length > 0) {
+      return NextResponse.json(testimonials, {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'CDN-Cache-Control': 'no-store',
+          'Vercel-CDN-Cache-Control': 'no-store'
+        }
+      })
+    }
+    
+    return NextResponse.json([], {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
+      }
+    })
   } catch (error) {
-    // Datos de respaldo
-    const fallbackTestimonials = [
-      { id: 't1', name: 'Carlos Rodríguez', role: 'Jefe de Mantenimiento', company: 'Industrias Metalúrgicas del Valle', content: 'Llevamos 15 años trabajando con Maquinarias Landau. Su servicio técnico es impecable y siempre tienen los repuestos que necesitamos.', rating: 5, active: true, order: 1 },
-      { id: 't2', name: 'María Fernanda López', role: 'Gerente de Compras', company: 'Constructora Andina S.A.S.', content: 'La asesoría que recibimos fue fundamental para optimizar nuestra inversión en herramientas. Profesionales de verdad.', rating: 5, active: true, order: 2 },
-      { id: 't3', name: 'Andrés Felipe Zapata', role: 'Propietario', company: 'Carpintería Zapata', content: 'Desde que descubrí Maquinarias Landau, no voy a otro lado. Atención personalizada y precios justos. La tradición se nota.', rating: 5, active: true, order: 3 }
-    ]
-    return NextResponse.json(fallbackTestimonials)
+    console.error('Error en API public/testimonials:', error)
+    return NextResponse.json([], {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate'
+      }
+    })
   }
 }
