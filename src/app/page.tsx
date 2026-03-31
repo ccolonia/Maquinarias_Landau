@@ -636,18 +636,51 @@ export default function Home() {
                 
                 {/* Video or Image */}
                 {config?.heroVideo ? (
-                  <video 
-                    src={config.heroVideo}
-                    poster={config.heroVideoPoster || config.heroImage || '/images/hero_visual.png'}
-                    className="relative z-10 w-full h-full object-contain rounded-2xl"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
+                  (() => {
+                    const videoUrl = config.heroVideo;
+                    // Detectar YouTube
+                    const youtubeMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+                    // Detectar Vimeo
+                    const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/);
+
+                    if (youtubeMatch) {
+                      // YouTube embed
+                      return (
+                        <iframe
+                          src={`https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}&controls=0&showinfo=0`}
+                          className="relative z-10 w-full h-full rounded-2xl"
+                          allow="autoplay; encrypted-media"
+                          allowFullScreen
+                        />
+                      );
+                    } else if (vimeoMatch) {
+                      // Vimeo embed
+                      return (
+                        <iframe
+                          src={`https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`}
+                          className="relative z-10 w-full h-full rounded-2xl"
+                          allow="autoplay; encrypted-media"
+                          allowFullScreen
+                        />
+                      );
+                    } else {
+                      // Video local (MP4, WebM, etc.)
+                      return (
+                        <video
+                          src={videoUrl}
+                          poster={config.heroVideoPoster || config.heroImage || '/images/hero_visual.png'}
+                          className="relative z-10 w-full h-full object-contain rounded-2xl"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
+                      );
+                    }
+                  })()
                 ) : (
-                  <img 
-                    src={config?.heroImage || '/images/hero_visual.png'} 
+                  <img
+                    src={config?.heroImage || '/images/hero_visual.png'}
                     alt="Maquinarias Landau - Herramientas Industriales"
                     className="relative z-10 w-full h-full object-contain animate-float"
                   />

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Link, X, Loader2, Play, Video, ImageIcon } from 'lucide-react'
+import { Upload, Link, X, Loader2, Video, ImageIcon, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -21,21 +21,21 @@ async function compressImage(file: File, maxWidth: number = 1200, quality: numbe
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     const img = new Image()
-    
+
     img.onload = () => {
       let width = img.width
       let height = img.height
-      
+
       if (width > maxWidth) {
         height = (height * maxWidth) / width
         width = maxWidth
       }
-      
+
       canvas.width = width
       canvas.height = height
-      
+
       ctx?.drawImage(img, 0, 0, width, height)
-      
+
       canvas.toBlob(
         (blob) => {
           if (blob) {
@@ -52,25 +52,31 @@ async function compressImage(file: File, maxWidth: number = 1200, quality: numbe
         quality
       )
     }
-    
+
     img.onerror = () => reject(new Error('Error al cargar imagen'))
     img.src = URL.createObjectURL(file)
   })
 }
 
-export function MediaUpload({ 
-  value, 
-  onChange, 
-  label = 'Media', 
+export function MediaUpload({
+  value,
+  onChange,
+  label = 'Media',
   accept = 'both',
-  className = '' 
+  className = ''
 }: MediaUploadProps) {
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
 
-  // Detectar si es video o imagen
-  const isVideo = value ? /\.(mp4|webm|ogg|mov|avi)(\?.*)?$/i.test(value) : false
+  // Detectar si es video o imagen (incluye data URLs y URLs externas)
+  const isVideo = value ? (
+    /\.(mp4|webm|ogg|mov|avi)(\?.*)?$/i.test(value) ||
+    value.startsWith('data:video/') ||
+    value.includes('youtube.com') ||
+    value.includes('youtu.be') ||
+    value.includes('vimeo.com')
+  ) : false
 
   // Manejar subida de archivo
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -108,6 +114,17 @@ export function MediaUpload({
       return
     }
 
+    // Para videos grandes, sugerir usar URL externa
+    if (isVideoFile && file.size > 4 * 1024 * 1024) {
+      toast({
+        title: 'Video muy grande',
+        description: 'Para videos mayores a 4MB, te recomendamos subirlo a YouTube o Vimeo y pegar la URL directamente.',
+        variant: 'destructive',
+        duration: 6000
+      })
+      return
+    }
+
     setUploading(true)
     try {
       let fileToUpload = file
@@ -122,10 +139,10 @@ export function MediaUpload({
         }
       }
 
-      // Validar tamaño máximo (50MB para videos, 10MB para imágenes)
-      const maxSize = isVideoFile ? 50 * 1024 * 1024 : 10 * 1024 * 1024
+      // Validar tamaño máximo (4MB para videos, 10MB para imágenes)
+      const maxSize = isVideoFile ? 4 * 1024 * 1024 : 10 * 1024 * 1024
       if (fileToUpload.size > maxSize) {
-        throw new Error(`El archivo es muy grande. Máximo ${isVideoFile ? '50MB' : '10MB'}`)
+        throw new Error(`El archivo es muy grande. Máximo ${isVideoFile ? '4MB para videos' : '10MB para imágenes'}`)
       }
 
       const formData = new FormData()
@@ -178,7 +195,7 @@ export function MediaUpload({
   }
 
   // Determinar tipos aceptados
-  const acceptTypes = accept === 'image' 
+  const acceptTypes = accept === 'image'
     ? 'image/jpeg,image/png,image/gif,image/webp'
     : accept === 'video'
     ? 'video/mp4,video/webm,video/ogg,video/quicktime'
@@ -190,22 +207,34 @@ export function MediaUpload({
         {accept === 'video' ? <Video className="w-4 h-4" /> : <ImageIcon className="w-4 h-4" />}
         {label}
       </Label>
-      
+
       {/* Preview de media */}
       {value && (
         <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-3">
           {isVideo ? (
-            <video 
-              src={value} 
-              className="w-full h-full object-cover"
-              controls
-              muted
-              playsInline
-            />
+            value.includes('youtube.com') || value.includes('youtu.be') || value.includes('vimeo.com') ? (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                <div className="text-center p-4">
+                  <ExternalLink className="w-8 h-8 mx-auto mb-2 text-gray-500" />
+                  <p className="text-sm text-gray-600">Video externo</p>
+                  <a href={value} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
+                    Ver video
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <video
+                src={value}
+                className="w-full h-full object-cover"
+                controls
+                muted
+                playsInline
+              />
+            )
           ) : (
-            <img 
-              src={value} 
-              alt="Preview" 
+            <img
+              src={value}
+              alt="Preview"
               className="w-full h-full object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/images/placeholder.png'
@@ -228,7 +257,11 @@ export function MediaUpload({
         <div className="relative flex-1">
           <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
-            placeholder={`URL de ${accept === 'video' ? 'video' : accept === 'image' ? 'imagen' : 'imagen o video'}`}
+            placeholder={accept === 'video'
+              ? 'URL de YouTube, Vimeo o archivo MP4'
+              : accept === 'image'
+              ? 'URL de imagen'
+              : 'URL de imagen o video'}
             value={value}
             onChange={(e) => onChange(e.target.value)}
             className="pl-10"
@@ -265,9 +298,10 @@ export function MediaUpload({
 
       {/* Nota sobre tamaño */}
       {accept === 'video' && (
-        <p className="text-xs text-gray-500">
-          Formatos soportados: MP4, WebM, OGG, MOV. Tamaño máximo: 50MB
-        </p>
+        <div className="text-xs text-gray-500 space-y-1">
+          <p><strong>Videos locales:</strong> Máximo 4MB (formato MP4, WebM, OGG)</p>
+          <p><strong>Videos grandes:</strong> Sube a YouTube/Vimeo y pega la URL</p>
+        </div>
       )}
     </div>
   )

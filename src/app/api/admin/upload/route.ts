@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,41 +27,34 @@ export async function POST(request: NextRequest) {
     // Determinar si es video o imagen
     const isVideo = file.type.startsWith('video/')
 
-    // Validar tamaño (máximo 50MB para videos, 10MB para imágenes)
+    // Validar tamaño
     const maxSize = isVideo ? 50 * 1024 * 1024 : 10 * 1024 * 1024
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: `El archivo es demasiado grande. Máximo ${isVideo ? '50MB para videos' : '10MB para imágenes'}` },
+        { error: `El archivo es demasiado grande. Máximo ${isVideo ? '50MB' : '10MB'}` },
         { status: 400 }
       )
     }
 
-    // Generar nombre único para el archivo
-    const timestamp = Date.now()
-    const randomStr = Math.random().toString(36).substring(2, 8)
-    const extension = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')
-    const fileName = `uploads/${isVideo ? 'videos' : 'images'}-${timestamp}-${randomStr}.${extension}`
-
-    // Usar el token específico de Maquinarias Landau
-    const blobToken = process.env.BLOB_READ_WRITE_TOKEN_ML || process.env.BLOB_READ_WRITE_TOKEN
-
-    if (!blobToken) {
-      return NextResponse.json(
-        { error: 'Error de configuración: Token de Blob Storage no configurado' },
-        { status: 500 }
-      )
+    // Para archivos pequeños (imágenes), usar base64
+    // Para videos grandes, requerir URL externa o YouTube/Vimeo
+    if (isVideo && file.size > 4 * 1024 * 1024) {
+      return NextResponse.json({
+        error: 'Los videos mayores a 4MB deben subirse a YouTube/Vimeo y usar la URL.\n\nOpciones:\n1. Sube el video a YouTube y pega el URL\n2. Usa un video más pequeño (menos de 4MB)',
+        isVideoTooLarge: true
+      }, { status: 400 })
     }
 
-    // Subir a Vercel Blob Storage con el token específico
-    const blob = await put(fileName, file, {
-      access: 'public',
-      addRandomSuffix: false,
-      token: blobToken,
-    })
+    // Convertir archivo a base64 (funciona para imágenes y videos pequeños)
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    const base64 = buffer.toString('base64')
+    const mimeType = file.type || (isVideo ? 'video/mp4' : 'image/jpeg')
+    const dataUrl = `data:${mimeType};base64,${base64}`
 
     return NextResponse.json({
       success: true,
-      url: blob.url,
+      url: dataUrl,
       fileName: file.name
     })
 
