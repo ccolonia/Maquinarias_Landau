@@ -491,23 +491,23 @@ export default function Home() {
 
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center gap-8">
-              <a href="#servicios" className="text-gray-500 hover:text-gray-800 transition-colors relative group">
+              <a href="#servicios" className="text-gray-700 hover:text-gray-900 transition-colors relative group">
                 Servicios
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BE1E2D] transition-all group-hover:w-full" />
               </a>
-              <a href="/productos" className="text-gray-500 hover:text-gray-800 transition-colors relative group">
+              <a href="/productos" className="text-gray-700 hover:text-gray-900 transition-colors relative group">
                 Productos
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BE1E2D] transition-all group-hover:w-full" />
               </a>
-              <a href="#nosotros" className="text-gray-500 hover:text-gray-800 transition-colors relative group">
+              <a href="#nosotros" className="text-gray-700 hover:text-gray-900 transition-colors relative group">
                 Nosotros
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BE1E2D] transition-all group-hover:w-full" />
               </a>
-              <a href="#testimonios" className="text-gray-500 hover:text-gray-800 transition-colors relative group">
+              <a href="#testimonios" className="text-gray-700 hover:text-gray-900 transition-colors relative group">
                 Testimonios
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BE1E2D] transition-all group-hover:w-full" />
               </a>
-              <a href="#contacto" className="text-gray-500 hover:text-gray-800 transition-colors relative group">
+              <a href="#contacto" className="text-gray-700 hover:text-gray-900 transition-colors relative group">
                 Contacto
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#BE1E2D] transition-all group-hover:w-full" />
               </a>
@@ -537,19 +537,19 @@ export default function Home() {
         {isMenuOpen && (
           <div className="lg:hidden bg-white/95 backdrop-blur-xl border-t border-[#BE1E2D]/10">
             <div className="px-4 py-6 space-y-4">
-              <a href="#servicios" className="block text-gray-600 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
+              <a href="#servicios" className="block text-gray-700 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
                 Servicios
               </a>
-              <a href="/productos" className="block text-gray-600 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
+              <a href="/productos" className="block text-gray-700 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
                 Productos
               </a>
-              <a href="#nosotros" className="block text-gray-600 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
+              <a href="#nosotros" className="block text-gray-700 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
                 Nosotros
               </a>
-              <a href="#testimonios" className="block text-gray-600 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
+              <a href="#testimonios" className="block text-gray-700 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
                 Testimonios
               </a>
-              <a href="#contacto" className="block text-gray-600 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
+              <a href="#contacto" className="block text-gray-700 hover:text-gray-900 py-2" onClick={() => setIsMenuOpen(false)}>
                 Contacto
               </a>
               <a href="#contacto" onClick={() => setIsMenuOpen(false)}>
