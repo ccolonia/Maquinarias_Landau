@@ -54,6 +54,9 @@ interface SiteConfig {
   heroTitle?: string
   heroSubtitle?: string
   heroDescription?: string
+  heroImage?: string
+  heroVideo?: string
+  heroVideoPoster?: string
   address?: string
   phone?: string
   whatsapp?: string
@@ -631,12 +634,24 @@ export default function Home() {
                   }}
                 />
                 
-                {/* Main image */}
-                <img 
-                  src="/images/hero_visual.png" 
-                  alt="Maquinarias Landau - Herramientas Industriales"
-                  className="relative z-10 w-full h-full object-contain animate-float"
-                />
+                {/* Video or Image */}
+                {config?.heroVideo ? (
+                  <video 
+                    src={config.heroVideo}
+                    poster={config.heroVideoPoster || config.heroImage || '/images/hero_visual.png'}
+                    className="relative z-10 w-full h-full object-contain rounded-2xl"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img 
+                    src={config?.heroImage || '/images/hero_visual.png'} 
+                    alt="Maquinarias Landau - Herramientas Industriales"
+                    className="relative z-10 w-full h-full object-contain animate-float"
+                  />
+                )}
                 
                 {/* Decorative ring */}
                 <div 

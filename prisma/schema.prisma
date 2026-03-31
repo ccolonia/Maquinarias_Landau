@@ -107,6 +107,8 @@ model SiteConfig {
   heroSubtitle      String?
   heroDescription   String?
   heroImage         String?
+  heroVideo         String?  // URL del video hero (MP4, WebM, etc.)
+  heroVideoPoster   String?  // Imagen de portada del video
   address           String?
   phone             String?
   whatsapp          String?

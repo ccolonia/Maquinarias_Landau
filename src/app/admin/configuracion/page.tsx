@@ -15,7 +15,9 @@ import {
   Lock,
   Eye,
   EyeOff,
-  Key
+  Key,
+  Video,
+  ImageIcon
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -24,6 +26,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { ImageUpload } from '@/components/admin/ImageUpload'
+import { MediaUpload } from '@/components/admin/MediaUpload'
 
 interface SiteConfig {
   id: string
@@ -34,6 +37,8 @@ interface SiteConfig {
   heroSubtitle: string
   heroDescription: string
   heroImage: string
+  heroVideo: string
+  heroVideoPoster: string
   address: string
   phone: string
   whatsapp: string
@@ -366,7 +371,10 @@ export default function ConfiguracionPage() {
       {/* Hero Section */}
       <Card className="border border-gray-100">
         <CardHeader>
-          <CardTitle>Sección Hero (Inicio)</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Video className="w-5 h-5" />
+            Sección Hero (Inicio)
+          </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
@@ -391,11 +399,46 @@ export default function ConfiguracionPage() {
               rows={2}
             />
           </div>
-          <ImageUpload
-            value={config.heroImage || ''}
-            onChange={(url) => updateConfig('heroImage', url)}
-            label="Imagen Hero"
-          />
+          
+          {/* Video Hero */}
+          <div className="border-t border-gray-200 pt-4 mt-2">
+            <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+              <Video className="w-4 h-4 text-[#BE1E2D]" />
+              Video Hero (Opcional)
+            </h4>
+            <p className="text-sm text-gray-500 mb-4">
+              Si subes un video, este tendrá prioridad sobre la imagen en la página de inicio.
+            </p>
+            <MediaUpload
+              value={config.heroVideo || ''}
+              onChange={(url) => updateConfig('heroVideo', url)}
+              label="Video Hero"
+              accept="video"
+            />
+            <div className="mt-4">
+              <ImageUpload
+                value={config.heroVideoPoster || ''}
+                onChange={(url) => updateConfig('heroVideoPoster', url)}
+                label="Portada del Video (Thumbnail)"
+              />
+            </div>
+          </div>
+          
+          {/* Imagen Hero (Fallback) */}
+          <div className="border-t border-gray-200 pt-4 mt-2">
+            <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-[#BE1E2D]" />
+              Imagen Hero (Fallback)
+            </h4>
+            <p className="text-sm text-gray-500 mb-4">
+              Esta imagen se mostrará cuando no haya video configurado.
+            </p>
+            <ImageUpload
+              value={config.heroImage || ''}
+              onChange={(url) => updateConfig('heroImage', url)}
+              label="Imagen Hero"
+            />
+          </div>
         </CardContent>
       </Card>
 
