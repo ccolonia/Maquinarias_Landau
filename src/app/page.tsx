@@ -466,11 +466,12 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   
-  // Estados para datos dinámicos
+  // Estados para datos dinámicos - inicializados con arrays vacíos para evitar errores de .map()
   const [services, setServices] = useState<Service[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [config, setConfig] = useState<SiteConfig | null>(null)
   const [loading, setLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   // Fetch datos al cargar
   useEffect(() => {
@@ -509,15 +510,27 @@ export default function Home() {
           configData = null
         }
         
-        // Validar que sean arrays antes de guardar
-        setServices(Array.isArray(servicesData) ? servicesData : [])
-        setTestimonials(Array.isArray(testimonialsData) ? testimonialsData : [])
-        setConfig(configData && typeof configData === 'object' && !Array.isArray(configData) ? configData : null)
+        // Validar que sean arrays antes de guardar - VALIDACIÓN EXPLÍCITA
+        const safeServices = Array.isArray(servicesData) && servicesData !== null ? servicesData : []
+        const safeTestimonials = Array.isArray(testimonialsData) && testimonialsData !== null ? testimonialsData : []
+        const safeConfig = configData && typeof configData === 'object' && !Array.isArray(configData) ? configData : null
+        
+        console.log('Data loaded:', { 
+          servicesCount: safeServices.length, 
+          testimonialsCount: safeTestimonials.length, 
+          hasConfig: !!safeConfig 
+        })
+        
+        setServices(safeServices)
+        setTestimonials(safeTestimonials)
+        setConfig(safeConfig)
+        setHasError(false)
       } catch (error) {
         console.error('Error fetching data:', error)
         setServices([])
         setTestimonials([])
         setConfig(null)
+        setHasError(true)
       } finally {
         setLoading(false)
       }
@@ -570,6 +583,17 @@ export default function Home() {
       </div>
     )
   }
+
+  // Si hubo un error, mostrar la página con datos por defecto
+  // No bloqueamos la página, solo mostramos contenido por defecto
+  const safeServices = Array.isArray(services) ? services : []
+  const safeTestimonials = Array.isArray(testimonials) ? testimonials : []
+  const safeMetrics = Array.isArray(metrics) ? metrics : [
+    { value: 75, suffix: "+", label: "Años de Experiencia" },
+    { value: 50000, suffix: "+", label: "Clientes Satisfechos" },
+    { value: 200, suffix: "+", label: "Marcas Disponibles" },
+    { value: 15, suffix: "", label: "Técnicos Certificados" }
+  ]
 
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
@@ -763,7 +787,7 @@ export default function Home() {
       <section className="relative py-16 bg-[#F5F5F5] border-y border-[#BE1E2D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {Array.isArray(metrics) && metrics.map((metric, index) => (
+            {safeMetrics.map((metric, index) => (
               <div key={index} className="text-center">
                 <Counter end={metric.value} suffix={metric.suffix} />
                 <p className="text-gray-500 text-sm uppercase tracking-wider">{metric.label}</p>
@@ -793,7 +817,7 @@ export default function Home() {
 
           {/* Services Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.isArray(services) && services.length > 0 ? services.map((service, index) => (
+            {safeServices.length > 0 ? safeServices.map((service, index) => (
               <FlipCard key={service?.id || index} service={service} index={index} />
             )) : (
               <div className="col-span-3 text-center py-12 text-gray-500">
@@ -893,7 +917,7 @@ export default function Home() {
 
           {/* Testimonials Grid */}
           <div className="grid md:grid-cols-3 gap-6">
-            {Array.isArray(testimonials) && testimonials.length > 0 ? testimonials.map((testimonial, index) => {
+            {safeTestimonials.length > 0 ? safeTestimonials.map((testimonial, index) => {
               // Asegurar que rating sea un número válido entre 1 y 5
               const safeRating = typeof testimonial?.rating === 'number' && testimonial.rating >= 1 && testimonial.rating <= 5 
                 ? testimonial.rating 
