@@ -362,6 +362,83 @@ function ParticleBackground() {
   )
 }
 
+// Hero Media Component - Handles video or image display
+function HeroMedia({ config }: { config: SiteConfig | null }) {
+  // Determinar si hay video válido (no vacío, no solo espacios)
+  const heroVideo = config?.heroVideo?.trim() || ''
+  const heroImage = config?.heroImage?.trim() || '/images/hero_visual.png'
+  const heroVideoPoster = config?.heroVideoPoster?.trim() || heroImage
+
+  // Si no hay video, mostrar imagen
+  if (!heroVideo) {
+    return (
+      <img
+        src={heroImage}
+        alt="Maquinarias Landau - Herramientas Industriales"
+        className="relative z-10 w-full h-full object-contain animate-float"
+        onError={(e) => {
+          // Fallback si la imagen no carga
+          const target = e.target as HTMLImageElement
+          if (target.src !== '/images/hero_visual.png') {
+            target.src = '/images/hero_visual.png'
+          }
+        }}
+      />
+    )
+  }
+
+  // Detectar YouTube
+  const youtubeMatch = heroVideo.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  // Detectar Vimeo
+  const vimeoMatch = heroVideo.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+
+  if (youtubeMatch) {
+    // YouTube embed
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}&controls=0&showinfo=0`}
+        className="relative z-10 w-full h-full rounded-2xl"
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+      />
+    )
+  }
+
+  if (vimeoMatch) {
+    // Vimeo embed
+    return (
+      <iframe
+        src={`https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`}
+        className="relative z-10 w-full h-full rounded-2xl"
+        allow="autoplay; encrypted-media"
+        allowFullScreen
+      />
+    )
+  }
+
+  // Video local (MP4, WebM, etc.)
+  return (
+    <video
+      src={heroVideo}
+      poster={heroVideoPoster}
+      className="relative z-10 w-full h-full object-contain rounded-2xl"
+      autoPlay
+      loop
+      muted
+      playsInline
+    >
+      <source src={heroVideo} type="video/mp4" />
+      <source src={heroVideo} type="video/webm" />
+      {/* Fallback a imagen si el video no es soportado */}
+      <img
+        src={heroVideoPoster}
+        alt="Maquinarias Landau - Herramientas Industriales"
+        className="w-full h-full object-contain"
+      />
+    </video>
+  )
+}
+
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -627,71 +704,22 @@ export default function Home() {
             <div className="relative animate-fade-in-rotate block lg:block mt-8 lg:mt-0">
               <div className="relative w-full aspect-square max-w-sm mx-auto lg:max-w-lg">
                 {/* Glow background */}
-                <div 
+                <div
                   className="absolute inset-0 rounded-full blur-3xl opacity-40"
-                  style={{ 
-                    background: 'radial-gradient(ellipse at center, rgba(190, 30, 45, 0.4) 0%, transparent 70%)' 
+                  style={{
+                    background: 'radial-gradient(ellipse at center, rgba(190, 30, 45, 0.4) 0%, transparent 70%)'
                   }}
                 />
-                
-                {/* Video or Image */}
-                {config?.heroVideo ? (
-                  (() => {
-                    const videoUrl = config.heroVideo;
-                    // Detectar YouTube
-                    const youtubeMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-                    // Detectar Vimeo
-                    const vimeoMatch = videoUrl.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/);
 
-                    if (youtubeMatch) {
-                      // YouTube embed
-                      return (
-                        <iframe
-                          src={`https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}&controls=0&showinfo=0`}
-                          className="relative z-10 w-full h-full rounded-2xl"
-                          allow="autoplay; encrypted-media"
-                          allowFullScreen
-                        />
-                      );
-                    } else if (vimeoMatch) {
-                      // Vimeo embed
-                      return (
-                        <iframe
-                          src={`https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`}
-                          className="relative z-10 w-full h-full rounded-2xl"
-                          allow="autoplay; encrypted-media"
-                          allowFullScreen
-                        />
-                      );
-                    } else {
-                      // Video local (MP4, WebM, etc.)
-                      return (
-                        <video
-                          src={videoUrl}
-                          poster={config.heroVideoPoster || config.heroImage || '/images/hero_visual.png'}
-                          className="relative z-10 w-full h-full object-contain rounded-2xl"
-                          autoPlay
-                          loop
-                          muted
-                          playsInline
-                        />
-                      );
-                    }
-                  })()
-                ) : (
-                  <img
-                    src={config?.heroImage || '/images/hero_visual.png'}
-                    alt="Maquinarias Landau - Herramientas Industriales"
-                    className="relative z-10 w-full h-full object-contain animate-float"
-                  />
-                )}
-                
+                {/* Hero Media - Video or Image */}
+                <HeroMedia config={config} />
+
                 {/* Decorative ring */}
-                <div 
+                <div
                   className="absolute inset-4 rounded-full border-2 border-[#BE1E2D]/20 animate-spin-slow"
                   style={{ animationDuration: '30s' }}
                 />
-                <div 
+                <div
                   className="absolute inset-8 rounded-full border border-[#BE1E2D]/10"
                   style={{ animation: 'spin-slow 40s linear infinite reverse' }}
                 />
