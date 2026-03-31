@@ -343,7 +343,7 @@ function ParticleBackground() {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((particle, i) => (
+      {Array.isArray(particles) && particles.map((particle, i) => (
         <div
           key={i}
           className="particle"
@@ -763,7 +763,7 @@ export default function Home() {
       <section className="relative py-16 bg-[#F5F5F5] border-y border-[#BE1E2D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {metrics.map((metric, index) => (
+            {Array.isArray(metrics) && metrics.map((metric, index) => (
               <div key={index} className="text-center">
                 <Counter end={metric.value} suffix={metric.suffix} />
                 <p className="text-gray-500 text-sm uppercase tracking-wider">{metric.label}</p>
