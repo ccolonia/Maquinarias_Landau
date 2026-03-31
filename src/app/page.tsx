@@ -389,23 +389,41 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
     )
   }
 
-  // Detectar YouTube - múltiples formatos
-  let youtubeId: string | null = null
-  
-  // Formato: youtube.com/watch?v=ID
-  const watchMatch = heroVideo.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
-  if (watchMatch) youtubeId = watchMatch[1]
-  
-  // Formato: youtube.com/embed/ID
-  const embedMatch = heroVideo.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
-  if (embedMatch) youtubeId = embedMatch[1]
-  
-  // Formato: youtu.be/ID
-  const shortMatch = heroVideo.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
-  if (shortMatch) youtubeId = shortMatch[1]
+  // Función mejorada para extraer ID de YouTube
+  function getYouTubeId(url: string): string | null {
+    if (!url) return null
+    
+    // Formato: youtube.com/watch?v=ID (con o sin www, con o sin parámetros adicionales)
+    const watchMatch = url.match(/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
+    if (watchMatch) return watchMatch[1]
+    
+    // Formato: youtube.com/embed/ID
+    const embedMatch = url.match(/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+    if (embedMatch) return embedMatch[1]
+    
+    // Formato: youtu.be/ID
+    const shortMatch = url.match(/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/)
+    if (shortMatch) return shortMatch[1]
+    
+    // Formato: youtube.com/v/ID (formato antiguo)
+    const vMatch = url.match(/(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/)
+    if (vMatch) return vMatch[1]
+    
+    // Formato: youtube.com/shorts/ID (YouTube Shorts)
+    const shortsMatch = url.match(/(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/)
+    if (shortsMatch) return shortsMatch[1]
+    
+    return null
+  }
 
+  const youtubeId = getYouTubeId(heroVideo)
+  
   // Detectar Vimeo
-  const vimeoMatch = heroVideo.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+  const vimeoMatch = heroVideo.match(/(?:www\.)?(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+
+  console.log('HeroMedia - Video URL:', heroVideo)
+  console.log('HeroMedia - YouTube ID:', youtubeId)
+  console.log('HeroMedia - Vimeo Match:', vimeoMatch)
 
   if (youtubeId) {
     // YouTube embed con mejor soporte

@@ -78,25 +78,37 @@ export function MediaUpload({
     value.includes('vimeo.com')
   ) : false
 
-  // Extraer ID de YouTube para previsualización
+  // Función mejorada para extraer ID de YouTube
   function getYouTubeId(url: string): string | null {
     if (!url) return null
-    // Formato: youtube.com/watch?v=ID
-    const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
+    
+    // Formato: youtube.com/watch?v=ID (con o sin www, con o sin parámetros adicionales)
+    const watchMatch = url.match(/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
     if (watchMatch) return watchMatch[1]
+    
     // Formato: youtube.com/embed/ID
-    const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+    const embedMatch = url.match(/(?:www\.)?youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
     if (embedMatch) return embedMatch[1]
+    
     // Formato: youtu.be/ID
-    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+    const shortMatch = url.match(/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/)
     if (shortMatch) return shortMatch[1]
+    
+    // Formato: youtube.com/v/ID (formato antiguo)
+    const vMatch = url.match(/(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/)
+    if (vMatch) return vMatch[1]
+    
+    // Formato: youtube.com/shorts/ID (YouTube Shorts)
+    const shortsMatch = url.match(/(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/)
+    if (shortsMatch) return shortsMatch[1]
+    
     return null
   }
 
   // Extraer ID de Vimeo para previsualización
   function getVimeoId(url: string): string | null {
     if (!url) return null
-    const vimeoMatch = url.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+    const vimeoMatch = url.match(/(?:www\.)?(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
     return vimeoMatch ? vimeoMatch[1] : null
   }
 

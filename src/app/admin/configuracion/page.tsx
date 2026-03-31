@@ -406,8 +406,11 @@ export default function ConfiguracionPage() {
               <Video className="w-4 h-4 text-[#BE1E2D]" />
               Video Hero (Opcional)
             </h4>
-            <p className="text-sm text-gray-500 mb-4">
-              Si subes un video, este tendrá prioridad sobre la imagen en la página de inicio.
+            <p className="text-sm text-gray-500 mb-2">
+              Si configuras un video, este tendrá prioridad sobre la imagen en la página de inicio.
+            </p>
+            <p className="text-xs text-gray-400 mb-4">
+              <strong>Formatos soportados:</strong> Pega directamente la URL de YouTube (ej: https://www.youtube.com/watch?v=XXXXX o https://youtu.be/XXXXX)
             </p>
             <MediaUpload
               value={config.heroVideo || ''}
