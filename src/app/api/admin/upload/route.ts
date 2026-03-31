@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { put } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,21 +37,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convertir archivo a base64
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const base64 = buffer.toString('base64')
-    const mimeType = file.type || 'image/jpeg'
-    
-    // Crear data URL (funciona en cualquier lugar)
-    const dataUrl = `data:${mimeType};base64,${base64}`
-    
-    return NextResponse.json({ 
+    // Generar nombre único para el archivo
+    const timestamp = Date.now()
+    const randomStr = Math.random().toString(36).substring(2, 8)
+    const extension = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')
+    const fileName = `uploads/${isVideo ? 'videos' : 'images'}-${timestamp}-${randomStr}.${extension}`
+
+    // Subir a Vercel Blob Storage
+    const blob = await put(fileName, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    })
+
+    return NextResponse.json({
       success: true,
-      url: dataUrl,
+      url: blob.url,
       fileName: file.name
     })
-    
+
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(
