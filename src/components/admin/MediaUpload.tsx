@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { Upload, Link, X, Loader2, Video, ImageIcon, ExternalLink } from 'lucide-react'
+import { Upload, Link, X, Loader2, Video, ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -77,6 +77,31 @@ export function MediaUpload({
     value.includes('youtu.be') ||
     value.includes('vimeo.com')
   ) : false
+
+  // Extraer ID de YouTube para previsualización
+  function getYouTubeId(url: string): string | null {
+    if (!url) return null
+    // Formato: youtube.com/watch?v=ID
+    const watchMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
+    if (watchMatch) return watchMatch[1]
+    // Formato: youtube.com/embed/ID
+    const embedMatch = url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+    if (embedMatch) return embedMatch[1]
+    // Formato: youtu.be/ID
+    const shortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+    if (shortMatch) return shortMatch[1]
+    return null
+  }
+
+  // Extraer ID de Vimeo para previsualización
+  function getVimeoId(url: string): string | null {
+    if (!url) return null
+    const vimeoMatch = url.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+    return vimeoMatch ? vimeoMatch[1] : null
+  }
+
+  const youtubeId = getYouTubeId(value)
+  const vimeoId = getVimeoId(value)
 
   // Manejar subida de archivo
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -212,17 +237,24 @@ export function MediaUpload({
       {value && (
         <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden mb-3">
           {isVideo ? (
-            value.includes('youtube.com') || value.includes('youtu.be') || value.includes('vimeo.com') ? (
-              <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                <div className="text-center p-4">
-                  <ExternalLink className="w-8 h-8 mx-auto mb-2 text-gray-500" />
-                  <p className="text-sm text-gray-600">Video externo</p>
-                  <a href={value} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 hover:underline">
-                    Ver video
-                  </a>
-                </div>
-              </div>
+            youtubeId ? (
+              // YouTube embed preview
+              <iframe
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : vimeoId ? (
+              // Vimeo embed preview
+              <iframe
+                src={`https://player.vimeo.com/video/${vimeoId}`}
+                className="w-full h-full"
+                allow="autoplay; encrypted-media; picture-in-picture"
+                allowFullScreen
+              />
             ) : (
+              // Video local
               <video
                 src={value}
                 className="w-full h-full object-cover"
