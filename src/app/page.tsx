@@ -1122,6 +1122,17 @@ export default function Home() {
             <p className="text-gray-500 text-sm">
               © {new Date().getFullYear()} Maquinarias Landau. Todos los derechos reservados.
             </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Diseñado y Programado por{' '}
+              <a 
+                href="https://www.sextosistema.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-[#BE1E2D] transition-colors"
+              >
+                www.sextosistema.com
+              </a>
+            </p>
           </div>
         </div>
       </footer>
