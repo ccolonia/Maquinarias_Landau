@@ -389,32 +389,53 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
     )
   }
 
-  // Detectar YouTube
-  const youtubeMatch = heroVideo.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  // Detectar YouTube - múltiples formatos
+  let youtubeId: string | null = null
+  
+  // Formato: youtube.com/watch?v=ID
+  const watchMatch = heroVideo.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
+  if (watchMatch) youtubeId = watchMatch[1]
+  
+  // Formato: youtube.com/embed/ID
+  const embedMatch = heroVideo.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+  if (embedMatch) youtubeId = embedMatch[1]
+  
+  // Formato: youtu.be/ID
+  const shortMatch = heroVideo.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+  if (shortMatch) youtubeId = shortMatch[1]
+
   // Detectar Vimeo
   const vimeoMatch = heroVideo.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
 
-  if (youtubeMatch) {
-    // YouTube embed
+  if (youtubeId) {
+    // YouTube embed con mejor soporte
     return (
-      <iframe
-        src={`https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&mute=1&loop=1&playlist=${youtubeMatch[1]}&controls=0&showinfo=0`}
-        className="relative z-10 w-full h-full rounded-2xl"
-        allow="autoplay; encrypted-media"
-        allowFullScreen
-      />
+      <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden bg-black">
+        <iframe
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+          className="absolute inset-0 w-full h-full"
+          style={{ border: 0 }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          title="Maquinarias Landau - Video"
+        />
+      </div>
     )
   }
 
   if (vimeoMatch) {
     // Vimeo embed
     return (
-      <iframe
-        src={`https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&mute=1&loop=1&controls=0`}
-        className="relative z-10 w-full h-full rounded-2xl"
-        allow="autoplay; encrypted-media"
-        allowFullScreen
-      />
+      <div className="relative z-10 w-full h-full rounded-2xl overflow-hidden bg-black">
+        <iframe
+          src={`https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&mute=1&loop=1&controls=0&background=1`}
+          className="absolute inset-0 w-full h-full"
+          style={{ border: 0 }}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+          title="Maquinarias Landau - Video"
+        />
+      </div>
     )
   }
 
