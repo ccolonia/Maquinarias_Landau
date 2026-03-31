@@ -868,10 +868,16 @@ export default function Home() {
               Ver Catálogo
               <ArrowRight className="w-5 h-5 ml-2" />
             </a>
-            <button className="bg-transparent text-gray-800 hover:text-gray-900 text-lg font-semibold border-2 border-[#BE1E2D]/50 hover:border-[#BE1E2D] hover:bg-[#BE1E2D]/5 rounded-xl transition-all duration-300" style={{padding: '16px 40px'}}>
+            <a 
+              href={`https://wa.me/${config?.whatsapp || '5491162422197'}?text=${encodeURIComponent('¿Listo para Potenciar tu Trabajo?')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-transparent text-gray-800 hover:text-gray-900 text-lg font-semibold border-2 border-[#BE1E2D]/50 hover:border-[#BE1E2D] hover:bg-[#BE1E2D]/5 rounded-xl transition-all duration-300 inline-flex items-center"
+              style={{padding: '16px 40px'}}
+            >
               <Phone className="w-5 h-5 mr-2 inline" />
               Llamar Ahora
-            </button>
+            </a>
           </div>
         </div>
       </section>
