@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
+import { head } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -43,17 +44,35 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')
     const fileName = `uploads/${isVideo ? 'videos' : 'images'}-${timestamp}-${randomStr}.${extension}`
 
-    // Subir a Vercel Blob Storage
-    const blob = await put(fileName, file, {
-      access: 'public',
-      addRandomSuffix: false,
-    })
+    // Intentar subir a Vercel Blob Storage
+    try {
+      const blob = await put(fileName, file, {
+        access: 'public',
+        addRandomSuffix: false,
+      })
 
-    return NextResponse.json({
-      success: true,
-      url: blob.url,
-      fileName: file.name
-    })
+      return NextResponse.json({
+        success: true,
+        url: blob.url,
+        fileName: file.name
+      })
+    } catch (blobError: any) {
+      console.error('Blob storage error:', blobError)
+
+      // Si el error es de autenticación del token
+      if (blobError.message?.includes('token') || blobError.message?.includes('secret') || blobError.message?.includes('auth')) {
+        return NextResponse.json(
+          { error: 'Error de configuración: BLOB_READ_WRITE_TOKEN no configurado. Por favor, configura el token en Vercel.' },
+          { status: 500 }
+        )
+      }
+
+      // Para otros errores, devolver el mensaje
+      return NextResponse.json(
+        { error: `Error al subir a Blob Storage: ${blobError.message || 'Error desconocido'}` },
+        { status: 500 }
+      )
+    }
 
   } catch (error) {
     console.error('Error uploading file:', error)
