@@ -366,7 +366,7 @@ function ParticleBackground() {
 function HeroMedia({ config }: { config: SiteConfig | null }) {
   // Determinar si hay video válido (no vacío, no solo espacios)
   const heroVideo = config?.heroVideo?.trim() || ''
-  const heroImage = config?.heroImage?.trim() || '/images/hero_visual.png'
+  const heroImage = config?.heroImage?.trim() || '/images/hero_visual.jpg'
   const heroVideoPoster = config?.heroVideoPoster?.trim() || heroImage
 
   // Si no hay video, mostrar imagen
@@ -379,8 +379,10 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
         onError={(e) => {
           // Fallback si la imagen no carga
           const target = e.target as HTMLImageElement
-          if (target.src !== '/images/hero_visual.png') {
+          if (target.src.includes('hero_visual.jpg')) {
             target.src = '/images/hero_visual.png'
+          } else if (target.src.includes('hero_visual.png')) {
+            target.src = '/images/hero_visual_old.png'
           }
         }}
       />

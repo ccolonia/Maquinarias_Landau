@@ -10,7 +10,7 @@ const fallbackConfig = {
   heroTitle: 'Potencia y Precisión para tu Trabajo',
   heroSubtitle: 'Distribuidores oficiales de Bosch y Makita',
   heroDescription: 'Más de 75 años liderando en herramientas industriales con servicio técnico propio y asesoría profesional.',
-  heroImage: '/images/hero_visual.png',
+  heroImage: '/images/hero_visual.jpg',
   heroVideo: null,
   heroVideoPoster: null,
   address: 'Av. Asamblea 524, C1424 CABA, Argentina',
