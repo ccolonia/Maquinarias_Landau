@@ -1,0 +1,1 @@
+{"errors":["content-type: must be multipart/form-data","accept: expected image/* or application/json, but received: */*"],"id":"a5376db107be96dd6c6bf2bd11b8fe07","name":"bad_request"}
