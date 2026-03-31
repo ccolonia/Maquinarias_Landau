@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
-import { head } from '@vercel/blob'
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,35 +43,28 @@ export async function POST(request: NextRequest) {
     const extension = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg')
     const fileName = `uploads/${isVideo ? 'videos' : 'images'}-${timestamp}-${randomStr}.${extension}`
 
-    // Intentar subir a Vercel Blob Storage
-    try {
-      const blob = await put(fileName, file, {
-        access: 'public',
-        addRandomSuffix: false,
-      })
+    // Usar el token específico de Maquinarias Landau
+    const blobToken = process.env.BLOB_READ_WRITE_TOKEN_ML || process.env.BLOB_READ_WRITE_TOKEN
 
-      return NextResponse.json({
-        success: true,
-        url: blob.url,
-        fileName: file.name
-      })
-    } catch (blobError: any) {
-      console.error('Blob storage error:', blobError)
-
-      // Si el error es de autenticación del token
-      if (blobError.message?.includes('token') || blobError.message?.includes('secret') || blobError.message?.includes('auth')) {
-        return NextResponse.json(
-          { error: 'Error de configuración: BLOB_READ_WRITE_TOKEN no configurado. Por favor, configura el token en Vercel.' },
-          { status: 500 }
-        )
-      }
-
-      // Para otros errores, devolver el mensaje
+    if (!blobToken) {
       return NextResponse.json(
-        { error: `Error al subir a Blob Storage: ${blobError.message || 'Error desconocido'}` },
+        { error: 'Error de configuración: Token de Blob Storage no configurado' },
         { status: 500 }
       )
     }
+
+    // Subir a Vercel Blob Storage con el token específico
+    const blob = await put(fileName, file, {
+      access: 'public',
+      addRandomSuffix: false,
+      token: blobToken,
+    })
+
+    return NextResponse.json({
+      success: true,
+      url: blob.url,
+      fileName: file.name
+    })
 
   } catch (error) {
     console.error('Error uploading file:', error)
