@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: 'Maquinarias Landau <onboarding@resend.dev>',
         to: adminEmail,
-        subject: `Nuevo mensaje de contacto - ${name}`,
+        subject: `🚀 Nuevo Contacto: ${name}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5;">
             <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
