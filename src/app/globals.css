@@ -197,7 +197,7 @@
 /* Flip Card Styles */
 .flip-card {
   perspective: 1000px;
-  height: 400px;
+  height: 320px;
 }
 
 .flip-card-inner {
@@ -243,8 +243,8 @@
   background: #BE1E2D;
   color: #ffffff;
   font-weight: 600;
-  padding: 16px 32px;
-  border-radius: 12px;
+  padding: 12px 24px;
+  border-radius: 10px;
   border: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -258,8 +258,8 @@
   background: transparent;
   color: #ffffff;
   font-weight: 600;
-  padding: 16px 32px;
-  border-radius: 12px;
+  padding: 12px 24px;
+  border-radius: 10px;
   border: 2px solid rgba(190, 30, 45, 0.5);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

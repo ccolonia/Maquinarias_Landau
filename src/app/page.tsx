@@ -309,7 +309,7 @@ function Counter({ end, suffix, duration = 2000 }: { end: number; suffix: string
 
   return (
     <div ref={ref} className="text-center">
-      <div className="text-4xl sm:text-5xl font-bold text-gray-800 mb-2">
+      <div className="text-3xl sm:text-4xl font-bold text-gray-800 mb-1">
         {count.toLocaleString()}{suffix}
       </div>
     </div>
@@ -688,7 +688,7 @@ export default function Home() {
         />
         <ParticleBackground />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Content */}
             <div className="text-center lg:text-left">
@@ -697,28 +697,28 @@ export default function Home() {
                 +{config?.yearsExperience || 75} Años de Trayectoria
               </Badge>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-gray-900 leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 leading-tight mb-4 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 {config?.heroTitle || 'Potencia y Precisión'}
                 <span className="block text-[#BE1E2D]">para tu Trabajo</span>
               </h1>
 
-              <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <p className="text-base sm:text-lg text-gray-600 mb-6 max-w-xl mx-auto lg:mx-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 {config?.heroDescription || 'Distribuidores oficiales de Bosch y Makita. Más de 75 años liderando en herramientas industriales con servicio técnico propio y asesoría profesional.'}
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-                <a href="/catalogo" className="btn-primary text-lg inline-flex items-center">
+                <a href="/catalogo" className="btn-primary text-base inline-flex items-center">
                   Ver Catálogo
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  <ArrowRight className="w-4 h-4 ml-2" />
                 </a>
                 <a 
                   href={`https://wa.me/${config?.whatsapp || '5491162422197'}?text=${encodeURIComponent('Hola! Necesito asistencia con el Servicio Técnico. ¿Podrían ayudarme?')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-gray-800 text-gray-200 hover:bg-gray-700 text-lg font-semibold border border-gray-600 rounded-xl transition-all duration-300 inline-flex items-center"
-                  style={{padding: '16px 32px'}}
+                  className="bg-gray-800 text-gray-200 hover:bg-gray-700 text-base font-semibold border border-gray-600 rounded-xl transition-all duration-300 inline-flex items-center"
+                  style={{padding: '12px 24px'}}
                 >
-                  <Phone className="w-5 h-5 mr-2 inline" />
+                  <Phone className="w-4 h-4 mr-2 inline" />
                   Servicio Técnico
                 </a>
               </div>
@@ -735,7 +735,7 @@ export default function Home() {
 
             {/* Hero Visual */}
             <div className="relative animate-fade-in-rotate block lg:block mt-8 lg:mt-0">
-              <div className="relative w-full aspect-square max-w-sm mx-auto lg:max-w-lg">
+              <div className="relative w-full aspect-square max-w-xs mx-auto lg:max-w-md">
                 {/* Glow background */}
                 <div
                   className="absolute inset-0 rounded-full blur-3xl opacity-40"
@@ -770,7 +770,7 @@ export default function Home() {
       </section>
 
       {/* Metrics Section */}
-      <section className="relative py-16 bg-[#F5F5F5] border-y border-[#BE1E2D]/10">
+      <section className="relative py-10 bg-[#F5F5F5] border-y border-[#BE1E2D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {Array.isArray(metrics) && metrics.map((metric, index) => (
@@ -784,18 +784,18 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="servicios" className="relative py-24 bg-white">
+      <section id="servicios" className="relative py-16 bg-white">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16 animate-on-scroll">
+          <div className="text-center mb-12 animate-on-scroll">
             <Badge className="mb-4 bg-[#BE1E2D]/20 text-[#BE1E2D] border border-[#BE1E2D]/30">
               Nuestros Servicios
             </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Soluciones Completas para
               <span className="text-[#BE1E2D]"> tu Industria</span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base text-gray-600 max-w-2xl mx-auto">
               Desde la venta de herramientas hasta el servicio técnico especializado,
               ofrecemos todo lo que necesitas para mantener tu operación en óptimas condiciones.
             </p>
@@ -815,7 +815,7 @@ export default function Home() {
       </section>
 
       {/* About Section - IMAGEN MÁS CLARA */}
-      <section id="nosotros" className="relative py-24 bg-[#4D4D4D]">
+      <section id="nosotros" className="relative py-16 bg-[#4D4D4D]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Image - SIN OVERLAY OSCURO */}
@@ -831,14 +831,14 @@ export default function Home() {
               </div>
               
               {/* Floating badge */}
-              <div className="absolute -bottom-6 -right-6 glass-card p-6 animate-float">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center">
-                    <Award className="w-8 h-8 text-[#BE1E2D]" />
+              <div className="absolute -bottom-4 -right-4 glass-card p-4 animate-float">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
+                    <Award className="w-6 h-6 text-[#BE1E2D]" />
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-white">{config?.yearsExperience || 75}+</div>
-                    <p className="text-sm text-[#A1A1AA]">Años de Experiencia</p>
+                    <div className="text-2xl font-bold text-white">{config?.yearsExperience || 75}+</div>
+                    <p className="text-xs text-[#A1A1AA]">Años de Experiencia</p>
                   </div>
                 </div>
               </div>
@@ -849,16 +849,16 @@ export default function Home() {
               <Badge className="mb-4 bg-[#BE1E2D]/20 text-[#f87171] border border-[#BE1E2D]/30">
                 Sobre Nosotros
               </Badge>
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4">
                 Una Historia de
                 <span className="text-[#f87171]"> Confianza</span>
               </h2>
-              <p className="text-[#A1A1AA] text-lg mb-6 leading-relaxed">
+              <p className="text-[#A1A1AA] text-base mb-4 leading-relaxed">
                 Desde 1949, <span className="text-white font-semibold">Maquinarias Landau</span> ha sido sinónimo de calidad y confianza 
                 en el sector de herramientas industriales. Como empresa familiar de tercera generación, hemos construido 
                 nuestra reputación sobre la base del servicio personalizado y la excelencia técnica.
               </p>
-              <p className="text-[#A1A1AA] text-lg mb-8 leading-relaxed">
+              <p className="text-[#A1A1AA] text-base mb-6 leading-relaxed">
                 Somos distribuidores oficiales de marcas líderes como <span className="text-white font-semibold">Bosch</span> y 
                 <span className="text-white font-semibold"> Makita</span>, y contamos con un servicio técnico propio que garantiza 
                 que tus herramientas siempre operen al máximo rendimiento.
@@ -884,18 +884,18 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimonios" className="relative py-24 bg-[#F5F5F5]">
+      <section id="testimonios" className="relative py-16 bg-[#F5F5F5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-16 animate-on-scroll">
+          <div className="text-center mb-12 animate-on-scroll">
             <Badge className="mb-4 bg-[#BE1E2D]/20 text-[#BE1E2D] border border-[#BE1E2D]/30">
               Testimonios
             </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Lo que Dicen
               <span className="text-[#BE1E2D]"> Nuestros Clientes</span>
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base text-gray-600 max-w-2xl mx-auto">
               Miles de profesionales y empresas confían en nosotros. Conoce por qué somos
               referentes en el sector de herramientas industriales.
             </p>
@@ -948,7 +948,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-24 overflow-hidden">
+      <section className="relative py-16 overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
@@ -962,29 +962,29 @@ export default function Home() {
             Estamos para Ayudarte
           </Badge>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             ¿Listo para Potenciar
             <span className="text-[#BE1E2D]"> tu Trabajo?</span>
           </h2>
 
-          <p className="text-lg text-gray-600 mb-10 max-w-2xl mx-auto">
+          <p className="text-base text-gray-600 mb-8 max-w-2xl mx-auto">
             Visítanos en nuestra tienda o contáctanos para recibir asesoría personalizada.
             Más de {config?.yearsExperience || 75} años nos respaldan.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/catalogo" className="btn-primary text-lg inline-flex items-center" style={{padding: '16px 40px'}}>
+            <a href="/catalogo" className="btn-primary text-base inline-flex items-center" style={{padding: '12px 28px'}}>
               Ver Catálogo
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <ArrowRight className="w-4 h-4 ml-2" />
             </a>
             <a 
               href={`https://wa.me/${config?.whatsapp || '5491162422197'}?text=${encodeURIComponent('¿Listo para Potenciar tu Trabajo?')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-transparent text-gray-800 hover:text-gray-900 text-lg font-semibold border-2 border-[#BE1E2D]/50 hover:border-[#BE1E2D] hover:bg-[#BE1E2D]/5 rounded-xl transition-all duration-300 inline-flex items-center"
-              style={{padding: '16px 40px'}}
+              className="bg-transparent text-gray-800 hover:text-gray-900 text-base font-semibold border-2 border-[#BE1E2D]/50 hover:border-[#BE1E2D] hover:bg-[#BE1E2D]/5 rounded-xl transition-all duration-300 inline-flex items-center"
+              style={{padding: '12px 28px'}}
             >
-              <Phone className="w-5 h-5 mr-2 inline" />
+              <Phone className="w-4 h-4 mr-2 inline" />
               Llamar Ahora
             </a>
           </div>
@@ -992,17 +992,17 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contacto" className="relative py-24 bg-[#F5F5F5]">
+      <section id="contacto" className="relative py-16 bg-[#F5F5F5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-[#BE1E2D]/20 text-[#BE1E2D] border border-[#BE1E2D]/30">
               Contacto
             </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
               Estamos para
               <span className="text-[#BE1E2D]"> Servirte</span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-600 text-base max-w-2xl mx-auto">
               Visítanos en nuestra tienda física o contáctanos por cualquiera de estos medios.
               Nuestro equipo está listo para atenderte.
             </p>
