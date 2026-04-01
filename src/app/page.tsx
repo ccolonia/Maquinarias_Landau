@@ -366,7 +366,7 @@ function ParticleBackground() {
 function HeroMedia({ config }: { config: SiteConfig | null }) {
   // Determinar si hay video válido (no vacío, no solo espacios)
   const heroVideo = config?.heroVideo?.trim() || ''
-  const heroImage = config?.heroImage?.trim() || '/images/hero_visual.png'
+  const heroImage = config?.heroImage?.trim() || '/images/hero_visual.jpg'
   const heroVideoPoster = config?.heroVideoPoster?.trim() || heroImage
 
   // Si no hay video, mostrar imagen
@@ -379,21 +379,21 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
         onError={(e) => {
           // Fallback si la imagen no carga
           const target = e.target as HTMLImageElement
-          if (target.src.includes('hero_visual.png')) {
-            target.src = '/images/hero_visual.jpg'
-          } else if (target.src.includes('hero_visual.jpg')) {
-            target.src = '/images/hero_visual_original.png'
+          if (target.src.includes('hero_visual.jpg')) {
+            target.src = '/images/hero_visual.png'
+          } else if (target.src.includes('hero_visual.png')) {
+            target.src = '/images/hero_visual_old.png'
           }
         }}
       />
     )
   }
 
-  // Función mejorada para extraer ID de YouTube
+  // Función mejorada para extraer ID de YouTube (soporta más formatos)
   function getYouTubeId(url: string): string | null {
     if (!url) return null
     
-    // Formato: youtube.com/watch?v=ID (con o sin www, con o sin parámetros adicionales)
+    // Formato: youtube.com/watch?v=ID (con o sin www)
     const watchMatch = url.match(/(?:www\.)?youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/)
     if (watchMatch) return watchMatch[1]
     
@@ -405,11 +405,7 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
     const shortMatch = url.match(/(?:www\.)?youtu\.be\/([a-zA-Z0-9_-]{11})/)
     if (shortMatch) return shortMatch[1]
     
-    // Formato: youtube.com/v/ID (formato antiguo)
-    const vMatch = url.match(/(?:www\.)?youtube\.com\/v\/([a-zA-Z0-9_-]{11})/)
-    if (vMatch) return vMatch[1]
-    
-    // Formato: youtube.com/shorts/ID (YouTube Shorts)
+    // Formato: youtube.com/shorts/ID
     const shortsMatch = url.match(/(?:www\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/)
     if (shortsMatch) return shortsMatch[1]
     
@@ -417,13 +413,9 @@ function HeroMedia({ config }: { config: SiteConfig | null }) {
   }
 
   const youtubeId = getYouTubeId(heroVideo)
-  
+
   // Detectar Vimeo
   const vimeoMatch = heroVideo.match(/(?:www\.)?(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d+)/)
-
-  console.log('HeroMedia - Video URL:', heroVideo)
-  console.log('HeroMedia - YouTube ID:', youtubeId)
-  console.log('HeroMedia - Vimeo Match:', vimeoMatch)
 
   if (youtubeId) {
     // YouTube embed con mejor soporte
@@ -484,12 +476,11 @@ export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   
-  // Estados para datos dinámicos - inicializados con arrays vacíos para evitar errores de .map()
+  // Estados para datos dinámicos
   const [services, setServices] = useState<Service[]>([])
   const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [config, setConfig] = useState<SiteConfig | null>(null)
   const [loading, setLoading] = useState(true)
-  const [hasError, setHasError] = useState(false)
 
   // Fetch datos al cargar
   useEffect(() => {
@@ -528,27 +519,15 @@ export default function Home() {
           configData = null
         }
         
-        // Validar que sean arrays antes de guardar - VALIDACIÓN EXPLÍCITA
-        const safeServices = Array.isArray(servicesData) && servicesData !== null ? servicesData : []
-        const safeTestimonials = Array.isArray(testimonialsData) && testimonialsData !== null ? testimonialsData : []
-        const safeConfig = configData && typeof configData === 'object' && !Array.isArray(configData) ? configData : null
-        
-        console.log('Data loaded:', { 
-          servicesCount: safeServices.length, 
-          testimonialsCount: safeTestimonials.length, 
-          hasConfig: !!safeConfig 
-        })
-        
-        setServices(safeServices)
-        setTestimonials(safeTestimonials)
-        setConfig(safeConfig)
-        setHasError(false)
+        // Validar que sean arrays antes de guardar
+        setServices(Array.isArray(servicesData) ? servicesData : [])
+        setTestimonials(Array.isArray(testimonialsData) ? testimonialsData : [])
+        setConfig(configData && typeof configData === 'object' && !Array.isArray(configData) ? configData : null)
       } catch (error) {
         console.error('Error fetching data:', error)
         setServices([])
         setTestimonials([])
         setConfig(null)
-        setHasError(true)
       } finally {
         setLoading(false)
       }
@@ -601,17 +580,6 @@ export default function Home() {
       </div>
     )
   }
-
-  // Si hubo un error, mostrar la página con datos por defecto
-  // No bloqueamos la página, solo mostramos contenido por defecto
-  const safeServices = Array.isArray(services) ? services : []
-  const safeTestimonials = Array.isArray(testimonials) ? testimonials : []
-  const safeMetrics = Array.isArray(metrics) ? metrics : [
-    { value: 75, suffix: "+", label: "Años de Experiencia" },
-    { value: 50000, suffix: "+", label: "Clientes Satisfechos" },
-    { value: 200, suffix: "+", label: "Marcas Disponibles" },
-    { value: 15, suffix: "", label: "Técnicos Certificados" }
-  ]
 
   return (
     <div className="min-h-screen bg-white text-gray-800 overflow-x-hidden">
@@ -805,7 +773,7 @@ export default function Home() {
       <section className="relative py-16 bg-[#F5F5F5] border-y border-[#BE1E2D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {safeMetrics.map((metric, index) => (
+            {Array.isArray(metrics) && metrics.map((metric, index) => (
               <div key={index} className="text-center">
                 <Counter end={metric.value} suffix={metric.suffix} />
                 <p className="text-gray-500 text-sm uppercase tracking-wider">{metric.label}</p>
@@ -835,7 +803,7 @@ export default function Home() {
 
           {/* Services Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {safeServices.length > 0 ? safeServices.map((service, index) => (
+            {Array.isArray(services) && services.length > 0 ? services.map((service, index) => (
               <FlipCard key={service?.id || index} service={service} index={index} />
             )) : (
               <div className="col-span-3 text-center py-12 text-gray-500">
@@ -935,7 +903,7 @@ export default function Home() {
 
           {/* Testimonials Grid */}
           <div className="grid md:grid-cols-3 gap-6">
-            {safeTestimonials.length > 0 ? safeTestimonials.map((testimonial, index) => {
+            {Array.isArray(testimonials) && testimonials.length > 0 ? testimonials.map((testimonial, index) => {
               // Asegurar que rating sea un número válido entre 1 y 5
               const safeRating = typeof testimonial?.rating === 'number' && testimonial.rating >= 1 && testimonial.rating <= 5 
                 ? testimonial.rating 
