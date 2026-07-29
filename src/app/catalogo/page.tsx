@@ -85,7 +85,7 @@ export default function CatalogoPage() {
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
             {/* Catálogo Bosch */}
             <a
-              href="https://folletosboschpt.com/campaign_es/folleto-profesional-campana-q1-2026-interactivo-esp/"
+              href="https://www.bosch-professional.com/ar/es/servicios/descargas/catalogos/"
               target="_blank"
               rel="noopener noreferrer"
               className="group"
@@ -129,7 +129,7 @@ export default function CatalogoPage() {
 
             {/* Catálogo Makita */}
             <a
-              href="https://www.makita.es/catalogos-y-promociones.html"
+              href="https://makita.com.ar/productos/"
               target="_blank"
               rel="noopener noreferrer"
               className="group"

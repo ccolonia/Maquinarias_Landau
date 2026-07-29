@@ -5,6 +5,14 @@ export async function POST() {
   try {
     const { db } = await import('@/lib/db')
     
+    // Limpiar datos existentes para evitar duplicados
+    await db.product.deleteMany()
+    await db.service.deleteMany()
+    await db.testimonial.deleteMany()
+    await db.siteConfig.deleteMany()
+    await db.category.deleteMany()
+    await db.brand.deleteMany()
+    
     // Crear marcas
     const brands = await Promise.all([
       db.brand.upsert({
@@ -23,19 +31,9 @@ export async function POST() {
         create: { name: 'CortaRapid', slug: 'cortarapid', color: '#FF6600', order: 3 }
       }),
       db.brand.upsert({
-        where: { slug: 'skil' },
-        update: {},
-        create: { name: 'Skil', slug: 'skil', color: '#E31837', order: 4 }
-      }),
-      db.brand.upsert({
         where: { slug: 'ganmar' },
         update: {},
-        create: { name: 'Línea Ganmar', slug: 'ganmar', color: '#1E5631', order: 5 }
-      }),
-      db.brand.upsert({
-        where: { slug: 'aleba' },
-        update: {},
-        create: { name: 'Soldadoras Aleba', slug: 'aleba', color: '#1E3A5F', order: 6 }
+        create: { name: 'Línea Ganmar', slug: 'ganmar', color: '#1E5631', order: 4 }
       })
     ])
 
@@ -469,62 +467,6 @@ export async function POST() {
         categorySlug: 'sierras',
         order: 19
       },
-      // Skil
-      {
-        name: 'Taladro Percutor 6260AA',
-        slug: 'taladro-skil-6260aa',
-        description: 'Taladro percutor de 650W con variable de velocidad y empuñadura ergonómica.',
-        power: '650W',
-        image: '/images/product_skil_1.png',
-        features: JSON.stringify(['650W', 'Variable', 'Ergonómico']),
-        brandSlug: 'skil',
-        categorySlug: 'taladros',
-        order: 20
-      },
-      {
-        name: 'Amoladora Angular 9295AC',
-        slug: 'amoladora-skil-9295ac',
-        description: 'Amoladora angular de 850W con sistema anti-vibración para mayor comodidad.',
-        power: '850W',
-        image: '/images/product_skil_2.png',
-        features: JSON.stringify(['850W', 'Anti-vibración', 'Cómoda']),
-        brandSlug: 'skil',
-        categorySlug: 'amoladoras',
-        order: 21
-      },
-      {
-        name: 'Amoladora Angular 9390AA',
-        slug: 'amoladora-skil-9390aa',
-        description: 'Amoladora angular de 900W con protección contra sobrecarga.',
-        power: '900W',
-        image: '/images/product_skil_3.png',
-        features: JSON.stringify(['900W', 'Protección sobrecarga', 'Segura']),
-        brandSlug: 'skil',
-        categorySlug: 'amoladoras',
-        order: 22
-      },
-      {
-        name: 'Taladro Percutor 6665AA',
-        slug: 'taladro-skil-6665aa',
-        description: 'Taladro percutor profesional de 750W con mandril de 13mm.',
-        power: '750W',
-        image: '/images/product_skil_4.png',
-        features: JSON.stringify(['750W', 'Mandril 13mm', 'Profesional']),
-        brandSlug: 'skil',
-        categorySlug: 'taladros',
-        order: 23
-      },
-      {
-        name: 'Amoladora Angular 9405AA',
-        slug: 'amoladora-skil-9405aa',
-        description: 'Amoladora angular de 1000W para trabajos exigentes en taller.',
-        power: '1000W',
-        image: '/images/product_skil_5.png',
-        features: JSON.stringify(['1000W', 'Taller', 'Potente']),
-        brandSlug: 'skil',
-        categorySlug: 'amoladoras',
-        order: 24
-      },
       // Ganmar
       {
         name: 'Compresor GM-50L',
@@ -591,73 +533,6 @@ export async function POST() {
         brandSlug: 'ganmar',
         categorySlug: 'lijadoras',
         order: 30
-      },
-      // Aleba
-      {
-        name: 'Soldadora Inverter MMA-200',
-        slug: 'soldadora-aleba-mma-200',
-        description: 'Soldadora inverter de 200A para electrodos revestidos. Tecnología IGBT.',
-        power: '200A',
-        image: '/images/product_aleba_1.png',
-        features: JSON.stringify(['200A', 'Inverter', 'Electrodos']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 31
-      },
-      {
-        name: 'Soldadora Inverter MIG-250',
-        slug: 'soldadora-aleba-mig-250',
-        description: 'Soldadora inverter MIG/MAG de 250A con alimentador de alambre incorporado.',
-        power: '250A',
-        image: '/images/product_aleba_2.png',
-        features: JSON.stringify(['250A', 'MIG/MAG', 'Alimentador']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 32
-      },
-      {
-        name: 'Soldadora TIG-315 AC/DC',
-        slug: 'soldadora-aleba-tig-315',
-        description: 'Soldadora TIG AC/DC de 315A para aluminio y aceros especiales.',
-        power: '315A',
-        image: '/images/product_aleba_3.png',
-        features: JSON.stringify(['315A', 'TIG AC/DC', 'Aluminio']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 33
-      },
-      {
-        name: 'Soldadora Inverter MMA-315',
-        slug: 'soldadora-aleba-mma-315',
-        description: 'Soldadora inverter profesional de 315A para trabajo industrial pesado.',
-        power: '315A',
-        image: '/images/product_aleba_4.png',
-        features: JSON.stringify(['315A', 'Industrial', 'Profesional']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 34
-      },
-      {
-        name: 'Soldadora Multi-proceso MP-400',
-        slug: 'soldadora-aleba-mp-400',
-        description: 'Soldadora multi-proceso de 400A: MMA, MIG, TIG en un solo equipo.',
-        power: '400A',
-        image: '/images/product_aleba_5.png',
-        features: JSON.stringify(['400A', 'Multi-proceso', 'Versátil']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 35
-      },
-      {
-        name: 'Cortadora Plasma PL-60',
-        slug: 'cortadora-plasma-aleba-pl-60',
-        description: 'Cortadora de plasma de 60A para corte de metales de hasta 20mm.',
-        power: '60A',
-        image: '/images/product_aleba_6.png',
-        features: JSON.stringify(['60A', 'Corte 20mm', 'Plasma']),
-        brandSlug: 'aleba',
-        categorySlug: 'soldadoras',
-        order: 36
       }
     ]
 
@@ -705,9 +580,9 @@ export async function POST() {
   } catch (error) {
     console.error('Error seeding database:', error)
     return NextResponse.json({ 
-      success: true, 
-      message: 'Usando datos de respaldo. Para persistencia, configure PostgreSQL en Vercel.',
-      note: 'El panel funciona con datos de demostración. Configure una base de datos PostgreSQL para guardar cambios permanentes.'
-    })
+      success: false, 
+      message: 'Error al sembrar la base de datos',
+      error: error instanceof Error ? error.message : 'Error desconocido'
+    }, { status: 500 })
   }
 }
